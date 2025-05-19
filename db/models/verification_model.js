@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM("verify_account", "reset_password", "reset_email"),
       allowNull: false,
     },
+    code: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     expiresAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -16,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true, // her user sadece 1 verification'a sahip olabilir
+      unique: true,
       references: {
         model: "Users",
         key: "id",

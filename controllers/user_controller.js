@@ -23,6 +23,7 @@ class UserController extends BaseController {
         res.status(401).json({ message: error.message });
     }
   }
+  
   async Logout(req, res) {
     try {
       const userId = req.user.id;
@@ -45,6 +46,17 @@ class UserController extends BaseController {
       return res.status(200).json(users);
     } catch (error) {
       return res.status(500).json({ message: error.message });
+    }
+  }
+  async VerifyAccount(req, res) {
+    try {
+      const email = req.user.email;
+      const { verification_type } = req.body;
+      await this.EmailService.sendVerificationCode(email, verification_type)
+      res.status(200).json({message: "Verification Code has been sent to your email!"})
+    } catch (error) {
+      res.status(400).json({message :error})
+      
     }
   }
 
