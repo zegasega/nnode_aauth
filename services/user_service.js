@@ -107,5 +107,5 @@ class UserService extends BaseService {
         return users;
     }
 }
+module.exports = UserService;
 
-module.exports = new UserService();

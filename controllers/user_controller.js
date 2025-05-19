@@ -8,12 +8,12 @@ class UserController extends BaseController {
   async Register(req, res) {
     try {
       const newUser = await this.UserService.registerUser(req.body);
+      await this.EmailService.sendWelcomeEmail(newUser.email);
       res.status(201).json({ message: "Success", data: newUser });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
-
   async Login(req, res) {
     try {
         const { email, password } = req.body;
@@ -23,7 +23,7 @@ class UserController extends BaseController {
         res.status(401).json({ message: error.message });
     }
   }
-   async Logout(req, res) {
+  async Logout(req, res) {
     try {
       const userId = req.user.id;
       await this.UserService.logoutUser(userId);
