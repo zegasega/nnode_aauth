@@ -3,7 +3,7 @@ const EmailService = require('../services/email_service');
 
 class BaseController {
   constructor() {
-    this.UserService = new UserService();   // Burada hata varsa bu satırda olur
+    this.UserService = new UserService(); 
     this.EmailService = new EmailService();
   }
 }

@@ -33,5 +33,13 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
   });
 
+  User.associate = (models) => {
+    User.hasOne(models.Verification, {
+      foreignKey: "userId",
+      as: "verification",
+      onDelete: "CASCADE", // kullanıcı silinirse verification da silinsin
+    });
+  };
+
   return User;
 };
