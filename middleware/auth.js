@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../db/index'); // Veya User modelini uygun şekilde import et
+const { User } = require('../db/index');
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers['authorization'];

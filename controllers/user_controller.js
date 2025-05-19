@@ -39,6 +39,15 @@ class UserController extends BaseController {
     }
   }
 
+  async AllUsers(req, res) {
+    try {
+      const users = await this.UserService.getAllUser();
+      return res.status(200).json(users);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
   
 }
 

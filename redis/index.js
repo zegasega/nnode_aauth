@@ -11,7 +11,7 @@ redisClient.on('error', (err) => {
 redisClient.on('connect', async () => {
   console.log('Redis connected');
   try {
-    await redisClient.flushAll(); // redis sifirlaniyor her api resette
+    await redisClient.flushAll();
     console.log('✅ Redis cache cleared on server restart');
   } catch (error) {
     console.error('❌ Error clearing Redis cache:', error);

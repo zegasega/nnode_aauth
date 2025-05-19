@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 const BaseService = require('../core/base_service');
 const { User } = require('../db/index');
-const redisClient = require('../redis/index');  
+const redisClient = require('../redis/index');
 
 class UserService extends BaseService {
     constructor(){
@@ -27,7 +27,7 @@ class UserService extends BaseService {
            role,
            jwtTokenVersion
         });
-        
+
         return newUser;
     }
 
@@ -35,7 +35,7 @@ class UserService extends BaseService {
         const blockKey = `login_block:${email}`;
         const attemptKey = `login_attempts:${email}`;
         const MAX_ATTEMPTS = 3;
-        const BLOCK_TIME_SECONDS = 10 * 60; // 10 dakika blok
+        const BLOCK_TIME_SECONDS = 10 * 60;
 
         const isBlocked = await redisClient.get(blockKey);
         if (isBlocked) {
@@ -100,7 +100,11 @@ class UserService extends BaseService {
         }
         user.jwtTokenVersion += 1;
         await user.save();
+    }
 
+    async getAllUser() {
+        const users = await this.findAll();
+        return users;
     }
 }
 
