@@ -1,11 +1,12 @@
 const { Op } = require('sequelize');
 const BaseService = require('../core/base_service');
 const { User } = require('../db/index');
-const redisClient = require('../redis/index');
+const RedisClient = require('../redis/index'); // Class yapısında import
 
 class UserService extends BaseService {
-    constructor(){
+    constructor() {
         super(User);
+        this.redis = RedisClient.getClient(); // Redis client örneğini al
     }
 
     async registerUser(userData) {
@@ -21,11 +22,11 @@ class UserService extends BaseService {
         const hashedPassword = await this.Utils.hashPassword(password);
 
         const newUser = await this.create({
-           username,
-           email,
-           password: hashedPassword,
-           role,
-           jwtTokenVersion
+            username,
+            email,
+            password: hashedPassword,
+            role,
+            jwtTokenVersion
         });
 
         return newUser;
@@ -37,7 +38,7 @@ class UserService extends BaseService {
         const MAX_ATTEMPTS = 3;
         const BLOCK_TIME_SECONDS = 10 * 60;
 
-        const isBlocked = await redisClient.get(blockKey);
+        const isBlocked = await this.redis.get(blockKey);
         if (isBlocked) {
             throw new Error('Account is temporarily blocked due to multiple failed login attempts. Please try again later.');
         }
@@ -51,24 +52,24 @@ class UserService extends BaseService {
         const isPasswordValid = await this.Utils.comparePassword(password, user.password);
 
         if (!isPasswordValid) {
-            const attempts = await redisClient.incr(attemptKey);
+            const attempts = await this.redis.incr(attemptKey);
             if (attempts === 1) {
-                await redisClient.expire(attemptKey, BLOCK_TIME_SECONDS);
+                await this.redis.expire(attemptKey, BLOCK_TIME_SECONDS);
             }
 
             if (attempts >= MAX_ATTEMPTS) {
-                await redisClient.set(blockKey, 'blocked', {
+                await this.redis.set(blockKey, 'blocked', {
                     EX: BLOCK_TIME_SECONDS
                 });
-                await redisClient.del(attemptKey);
-                throw new Error('Account blocked for 30 minutes due to multiple failed login attempts.');
+                await this.redis.del(attemptKey);
+                throw new Error('Account blocked for 10 minutes due to multiple failed login attempts.');
             }
 
             throw new Error('Invalid Password');
         }
 
-        await redisClient.del(attemptKey);
-        await redisClient.del(blockKey);
+        await this.redis.del(attemptKey);
+        await this.redis.del(blockKey);
 
         const accessToken = this.Utils.generateAccessToken({
             id: user.id,
@@ -89,15 +90,16 @@ class UserService extends BaseService {
             user,
             accessToken,
             refreshToken
-        }
+        };
     }
 
-    async logoutUser(userID ) {
+    async logoutUser(userID) {
         const user = await this.findById(userID);
 
         if (!user) {
             throw new Error("User not found");
         }
+
         user.jwtTokenVersion += 1;
         await user.save();
     }
@@ -107,5 +109,5 @@ class UserService extends BaseService {
         return users;
     }
 }
-module.exports = UserService;
 
+module.exports = UserService;

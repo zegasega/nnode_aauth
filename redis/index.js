@@ -1,23 +1,37 @@
 const { createClient } = require('redis');
 
-const redisClient = createClient({
-  url: 'redis://127.0.0.1:6379'
-});
+class RedisClient {
+  constructor() {
+    this.client = createClient({
+      url: 'redis://127.0.0.1:6379'
+    });
 
-redisClient.on('error', (err) => {
-  console.error('Redis connection error:', err);
-});
-
-redisClient.on('connect', async () => {
-  console.log('Redis connected');
-  try {
-    await redisClient.flushAll(); // server basladiginda redisi resetliyor.
-    console.log('✅ Redis cache cleared on server restart');
-  } catch (error) {
-    console.error('❌ Error clearing Redis cache:', error);
+    this._setupEvents();
   }
-});
 
-redisClient.connect();
+  _setupEvents() {
+    this.client.on('error', (err) => {
+      console.error('Redis connection error:', err);
+    });
 
-module.exports = redisClient;
+    this.client.on('connect', async () => {
+      console.log('Redis connected');
+      try {
+        await this.client.flushAll(); 
+        console.log('Redis cache cleared on server restart');
+      } catch (error) {
+        console.error('Error clearing Redis cache:', error);
+      }
+    });
+  }
+
+  async connect() {
+    await this.client.connect();
+  }
+
+  getClient() {
+    return this.client;
+  }
+}
+
+module.exports = new RedisClient();
