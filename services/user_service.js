@@ -1,12 +1,44 @@
 const { Op } = require('sequelize');
 const BaseService = require('../core/base_service');
-const { User } = require('../db/index');
+const { User, Verification } = require('../db/index');
 const RedisClient = require('../redis/index'); // Class yapısında import
 
 class UserService extends BaseService {
     constructor() {
         super(User);
         this.redis = RedisClient.getClient(); // Redis client örneğini al
+
+    }
+
+    async changePassword(user_id, code, newPassword) {
+        const verification_record = await Verification.findOne({
+            where: {
+                userId: user_id,
+                code,
+                verification_type: "reset_password", // opsiyonel, eğer kayıtlıysa
+                expiresAt: { [Op.gt]: new Date() }, // süresi geçmiş mi
+            },
+        });
+
+        if (!verification_record) {
+            throw new Error("Invalid or expired verification code");
+        }
+
+        // 2. Kullanıcıyı bul
+        const user = await this.findById(user_id);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        // 3. Yeni şifreyi hashle ve kaydet
+        const hashedPassword = await this.Utils.hashPassword(newPassword);
+        user.password = hashedPassword;
+        await user.save();
+
+        // 4. Verification kaydını sil
+        await verification_record.destroy();
+
+        return { message: "Password changed successfully" };
     }
 
     async registerUser(userData) {

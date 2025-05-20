@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     User.hasOne(models.Verification, {
       foreignKey: "userId",
       as: "verification",
-      onDelete: "CASCADE", // kullanıcı silinirse verification da silinsin
+      onDelete: "CASCADE",
     });
   };
 

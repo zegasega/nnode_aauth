@@ -4,6 +4,26 @@ class UserController extends BaseController {
   constructor() {
     super();
   }
+  async ChangePassword(req, res) {
+    try {
+      const id = req.user.id;
+      const { code, newPassword } = req.body;
+      const result = await this.UserService.changePassword(id, code, newPassword);
+      res.status(200).json({ message: result.message });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async ResetPassword(req, res) {
+    try {
+      const email = req.user.email;
+      await this.EmailService.sendResetPasswordEmail(email);
+      res.status(200).json({message: "reset password code has been sent to your email adress"});
+    } catch (error) {
+      res.status(400).json({message: error});
+    }
+  }
 
   async Register(req, res) {
     try {
@@ -59,7 +79,6 @@ class UserController extends BaseController {
       
     }
   }
-
   
 }
 

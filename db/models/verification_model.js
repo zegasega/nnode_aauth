@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     verification_type: {
-      type: DataTypes.ENUM("verify_account", "reset_password", "reset_email"),
+      type: DataTypes.ENUM("verify_account", "reset_password"),
       allowNull: false,
     },
     code: {

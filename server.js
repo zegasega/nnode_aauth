@@ -2,8 +2,7 @@ const app = require('./app');
 const db = require('./db/index');
 require('dotenv').config();
 
-const RedisClient = require('./redis/index'); // Redis class importu
-
+const RedisClient = require('./redis/index'); 
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
@@ -14,13 +13,13 @@ async function startServer() {
     await db.sequelize.sync({ alter: true, force: true });
     console.log('Tables synchronized');
 
-    await RedisClient.connect(); // Redis bağlantısı başlatılıyor
+    await RedisClient.connect(); 
 
     app.listen(PORT, () => {
       console.log(`Server is running at http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error('❌ Error starting server:', err);
+    console.error('Error starting server:', err);
   }
 }
 
