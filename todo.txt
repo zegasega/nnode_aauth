@@ -1,3 +1,8 @@
 1 - user service de tek tek model yerine db yi import et ve boyle kullan this.db.User
 2- SQS LAMBDA SES servislerinin videolari tekrar izle ve sqs servisini yaz
 3- aws uzerinden lambda rollerini ve ses ayarlari yapilacak
+
+
+
+APP:
+    Freelancer & İşveren Platformu

@@ -20,25 +20,23 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM("admin", "user"),
-      defaultValue: "user",
+      type: DataTypes.ENUM("admin", "freelancer", "client"),
+      defaultValue: "freelancer",
       allowNull: false,
     },
     jwtTokenVersion: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-      allowNull: true,
     }
   }, {
     timestamps: true,
+    tableName: 'users'
   });
 
   User.associate = (models) => {
-    User.hasOne(models.Verification, {
-      foreignKey: "userId",
-      as: "verification",
-      onDelete: "CASCADE",
-    });
+    User.hasMany(models.Job, { foreignKey: 'clientId', as: 'postedJobs' }); // client -> job
+    User.hasMany(models.Application, { foreignKey: 'freelancerId', as: 'applications' }); // freelancer -> application
+    User.hasMany(models.Notification, { foreignKey: 'userId', as: 'notifications' }); // user -> notification
   };
 
   return User;

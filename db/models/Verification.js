@@ -21,13 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
-      references: {
-        model: "Users",
-        key: "id",
-      },
     }
   }, {
     timestamps: true,
+    tableName: "verifications",
   });
 
   Verification.associate = (models) => {
